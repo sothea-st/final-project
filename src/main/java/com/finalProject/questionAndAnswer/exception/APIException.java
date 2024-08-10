@@ -1,6 +1,9 @@
 package com.finalProject.questionAndAnswer.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -12,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class APIException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -25,7 +29,6 @@ public class APIException {
                         .detail(fieldError.getDefaultMessage())
                         .build()
         ));
-
 
         FieldError<?> fieldError = FieldError.builder()
                 .status(e.getStatusCode().value())
@@ -46,5 +49,6 @@ public class APIException {
 
         return Map.of("error", fieldError);
     }
+
 
 }

@@ -93,7 +93,7 @@ public class AuthServiceImp implements AuthService {
     public void sendVerification(SendVerificationRequest sendVerificationRequest) throws MessagingException {
 
         // validate email
-        User user = userRepository.findByEmailAndIsDeletedTrue(sendVerificationRequest.email())
+        User user = userRepository.findByEmailAndIsDeletedTrueAndIsVerifyTrue(sendVerificationRequest.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email has not been found"));
 
 
@@ -123,7 +123,7 @@ public class AuthServiceImp implements AuthService {
 
     @Override
     public void verify(VerifyRequest verifyRequest) {
-        User user = userRepository.findByEmailAndIsDeletedTrue(verifyRequest.email())
+        User user = userRepository.findByEmailAndIsDeletedTrueAndIsVerifyTrue(verifyRequest.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email has not been found"));
 
         UserVerification userVerification = userVerificationRepository

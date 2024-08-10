@@ -13,7 +13,6 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.stereotype.Component;
-
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -22,10 +21,6 @@ import java.util.UUID;
 
 @Component
 public class AccessTokenConfig {
-
-//    ********************** access token ***************************
-
-
     // step 1 . create bean keyPair ( public key and private key )
     // public key and private key it will store in memory
     // Only application spring know where location of keyPair
@@ -86,7 +81,4 @@ public class AccessTokenConfig {
                  step 4. create bean JwtDecoder ---> required bean RSAKey
                  step 5. create bean JwtEncoder ---> required bean JWKSource
      */
-
-    //    ********************** access token ***************************
-
 }
