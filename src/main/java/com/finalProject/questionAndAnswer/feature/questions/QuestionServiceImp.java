@@ -4,6 +4,7 @@ import com.finalProject.questionAndAnswer.domain.Question;
 import com.finalProject.questionAndAnswer.domain.User;
 import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionRequest;
 import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionResponse;
+import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionUpdateRequest;
 import com.finalProject.questionAndAnswer.feature.user.UserRepository;
 import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.JavaResponseCollection;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -32,6 +34,7 @@ public class QuestionServiceImp implements QuestionService {
      * variable message
      */
     private final String userNotFound = "User not found with uuid : ";
+    private final String questionNotFound = "Question not found with uuid : ";
 
     /**
      * create question
@@ -106,6 +109,70 @@ public class QuestionServiceImp implements QuestionService {
                 .count(page.getTotalElements())
                 .data(questionResponses)
                 .build();
+    }
+
+    /**
+     * update question
+     *
+     * @param questionUpdateRequest contain data from client
+     * @return JavaResponse
+     */
+    @Override
+    public JavaResponse<?> updateQuestionByUser(QuestionUpdateRequest questionUpdateRequest, String uuidQuestion) {
+
+        /**
+         *  validate Question exist or not
+         */
+        Question question = questionRepository.findByUuidAndIsDeletedTrue(uuidQuestion)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, questionNotFound + uuidQuestion));
+
+        /**
+         * set new value
+         */
+        question.setTitle(questionUpdateRequest.title());
+        question.setContent(questionUpdateRequest.content());
+        question.setSnippedCode(questionUpdateRequest.snippedCode());
+        questionRepository.save(question);
+
+
+        return JavaResponse.builder()
+                .data(mapToQuestionResponse(question))
+                .build();
+    }
+
+
+    /**
+     * read question by uuid
+     *
+     * @param uuidQuestion identity of question
+     * @return JavaResponse
+     */
+    @Override
+    public JavaResponse<?> readQuestionByUuid(String uuidQuestion) {
+        /**
+         *  validate Question exist or not
+         */
+        Question question = questionRepository.findByUuidAndIsDeletedTrue(uuidQuestion)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, questionNotFound + uuidQuestion));
+
+        return JavaResponse.builder()
+                .data(mapToQuestionResponse(question))
+                .build();
+    }
+
+    /**
+     *  delete question by uuid
+     *  @param uuidQuestion identity of question
+     */
+    @Override
+    public void deleteQuestionByUuid(String uuidQuestion) {
+        /**
+         *  validate Question exist or not
+         */
+        Question question = questionRepository.findByUuidAndIsDeletedTrue(uuidQuestion)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, questionNotFound + uuidQuestion));
+        question.setIsDeleted(false);
+        questionRepository.save(question);
     }
 
     /**

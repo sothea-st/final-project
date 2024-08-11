@@ -1,6 +1,7 @@
 package com.finalProject.questionAndAnswer.feature.questions;
 
 import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionRequest;
+import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionUpdateRequest;
 import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.JavaResponseCollection;
 
@@ -20,5 +21,25 @@ public interface QuestionService {
      */
     JavaResponseCollection<?> readQuestionsByUser(int pageNumber , int pageSize, String uuidUser);
 
+    /**
+     * update question
+     * @param questionUpdateRequest contain data from client
+     * @return JavaResponse
+     */
+    JavaResponse<?> updateQuestionByUser(QuestionUpdateRequest questionUpdateRequest, String uuidQuestion);
 
+
+    /**
+     * read question by uuid
+     * @param uuidQuestion identity of question
+     * @return JavaResponse
+     */
+    JavaResponse<?> readQuestionByUuid(String uuidQuestion);
+
+
+    /**
+     *  delete question by uuid
+     *  @param uuidQuestion identity of question
+     */
+    void deleteQuestionByUuid(String uuidQuestion);
 }

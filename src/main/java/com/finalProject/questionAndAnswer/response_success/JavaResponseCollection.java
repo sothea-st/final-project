@@ -6,8 +6,8 @@ import lombok.Builder;
 public record JavaResponseCollection<T>(
         int status,
         String msg,
-        T data,
-        long count
+        long count,
+        T data
 ) {
     public JavaResponseCollection {
         if (status == 0) status = 200; // Default status
