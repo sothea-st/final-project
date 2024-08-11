@@ -3,15 +3,8 @@ package com.finalProject.questionAndAnswer.domain;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,10 +20,10 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
+    @ManyToOne
     private Bookmark bookmark;
 
-    @OneToOne
+    @ManyToOne
     private User user; // user_id
  
     @OneToMany(mappedBy = "question")
@@ -55,13 +48,10 @@ public class Question {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-
     @OneToMany(mappedBy = "question")
     private List<Image> images;
 
     @OneToMany(mappedBy = "question")
     private List<Vote> votes;
 
-
-    
 }

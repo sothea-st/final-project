@@ -2,17 +2,22 @@ package com.finalProject.questionAndAnswer.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @RestControllerAdvice
 @Slf4j
@@ -49,6 +54,20 @@ public class APIException {
 
         return Map.of("error", fieldError);
     }
+
+//    @ExceptionHandler(BadCredentialsException.class)
+//    public ResponseEntity<Map<String, Object>> handleBadCredentialsException(BadCredentialsException e) {
+//        log.error("Authentication failed: ", e);
+//
+//        FieldError<?> fieldError = FieldError.builder()
+//                .status(HttpStatus.UNAUTHORIZED.value())
+//                .reason("email or password is incorrect")
+//                .build();
+//
+//        return new ResponseEntity<>(Map.of("error", fieldError), HttpStatus.UNAUTHORIZED);
+//    }d
+
+
 
 
 }

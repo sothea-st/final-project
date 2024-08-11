@@ -7,6 +7,8 @@ import com.finalProject.questionAndAnswer.feature.auth.dto.*;
 import com.finalProject.questionAndAnswer.feature.user.RoleRepository;
 import com.finalProject.questionAndAnswer.feature.user.UserRepository;
 import com.finalProject.questionAndAnswer.feature.user.UserVerificationRepository;
+import com.finalProject.questionAndAnswer.security.CustomUserDetails;
+import com.finalProject.questionAndAnswer.security.UserDetailsServiceImp;
 import com.finalProject.questionAndAnswer.utils.RandomUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -20,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -34,6 +37,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -93,7 +97,7 @@ public class AuthServiceImp implements AuthService {
     public void sendVerification(SendVerificationRequest sendVerificationRequest) throws MessagingException {
 
         // validate email
-        User user = userRepository.findByEmailAndIsDeletedTrueAndIsVerifyTrue(sendVerificationRequest.email())
+        User user = userRepository.findByEmailAndIsDeletedTrue(sendVerificationRequest.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email has not been found"));
 
 
@@ -123,13 +127,12 @@ public class AuthServiceImp implements AuthService {
 
     @Override
     public void verify(VerifyRequest verifyRequest) {
-        User user = userRepository.findByEmailAndIsDeletedTrueAndIsVerifyTrue(verifyRequest.email())
+        User user = userRepository.findByEmailAndIsDeletedTrue(verifyRequest.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email has not been found"));
 
         UserVerification userVerification = userVerificationRepository
                 .findByUserAndVerifyCode(user, verifyRequest.verificationCode())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User verification has not been found"));
-
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User verification incorrect"));
 
         if (LocalTime.now().isAfter(userVerification.getExpirationTime())) {
             userVerificationRepository.delete(userVerification);
@@ -149,8 +152,6 @@ public class AuthServiceImp implements AuthService {
         // BearerTokenAuthenticationToken use to create authentication object type JWT
         Authentication auth = new BearerTokenAuthenticationToken(refreshToken);
         auth = jwtAuthenticationProvider.authenticate(auth);
-
-
 
         Jwt jwt = (Jwt) auth.getPrincipal();
 
@@ -179,8 +180,8 @@ public class AuthServiceImp implements AuthService {
                     .subject("Refresh Token")
                     .issuer(auth.getName())
                     .issuedAt(now)
-                    .expiresAt(now.plus(7,ChronoUnit.DAYS))
-                    .audience(List.of("Mobile APP","Desktop","Vue.js"))
+                    .expiresAt(now.plus(7, ChronoUnit.DAYS))
+                    .audience(List.of("Mobile APP", "Desktop", "Vue.js"))
                     .claim("scope", jwt.getClaimAsString("scope"))
                     .build();
             refreshToken = refreshTokenJwtEncoder
@@ -195,15 +196,17 @@ public class AuthServiceImp implements AuthService {
                 .build();
     }
 
-    @Override
-    public AuthResponse login(LoginRequest loginRequest) {
 
-        // Authenticate client with username (phoneNumber) and password
-        // use class UserPasswordAuthenticationToken to check user secure or not , authenticate or not
-        // when success return object Authentication if it fail return null
-        // when user login UsernamePasswordAuthenticationToken automatic invoke bean DaoAuthenticationProvider
-        // Authentication auth =new UsernamePasswordAuthenticationToken(loginRequest.email() , loginRequest.password());
-        // auth =daoAuthenticationProvider.authenticate(auth);
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+        /**
+         *          Authenticate client with username (phoneNumber) and password
+         *          use class UserPasswordAuthenticationToken to check user secure or not , authenticate or not
+         *          success return object Authentication fail return null
+         *          when user login UsernamePasswordAuthenticationToken automatic invoke bean DaoAuthenticationProvider
+         *          Authentication auth =new UsernamePasswordAuthenticationToken(loginRequest.email() , loginRequest.password());
+         *          auth =daoAuthenticationProvider.authenticate(auth);
+         */
 
         Authentication auth = new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password());
 
@@ -229,8 +232,8 @@ public class AuthServiceImp implements AuthService {
                 .issuer(auth.getName())
                 .issuedAt(now)
                 .expiresAt(now.plus(30, ChronoUnit.MINUTES))
-                .audience(List.of("Mobile APP","Desktop","Vue.js"))
-                .claim("scope",scope)
+                .audience(List.of("Mobile APP", "Desktop", "Vue.js"))
+                .claim("scope", scope)
                 .build();
         // step 2. Generate Token
         String accessToken = accessTokenJwtEncoder
@@ -239,29 +242,64 @@ public class AuthServiceImp implements AuthService {
         log.info("*************** success generate token : *************** " + accessToken);
 
 
-
 //        ************************ refresh token ************************
         JwtClaimsSet jwtRefreshClaimsSet = JwtClaimsSet.builder()
                 .id(auth.getName())
                 .subject("Refresh Token")
                 .issuer(auth.getName())
-                .expiresAt(now.plus(7,ChronoUnit.DAYS))
-                .issuedAt(now.plus(30,ChronoUnit.MINUTES))
-                .audience(List.of("Mobile APP","Desktop","Vue.js"))
-                .claim("scope",scope)
+                .expiresAt(now.plus(7, ChronoUnit.DAYS))
+                .issuedAt(now.plus(30, ChronoUnit.MINUTES))
+                .audience(List.of("Mobile APP", "Desktop", "Vue.js"))
+                .claim("scope", scope)
                 .build();
 
         String refreshToken = refreshTokenJwtEncoder
-                        .encode(JwtEncoderParameters
+                .encode(JwtEncoderParameters
                         .from(jwtRefreshClaimsSet))
-                        .getTokenValue();
+                .getTokenValue();
 
-        return AuthResponse.builder()
-                .tokenType("Bearer")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
+
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+
+//        if (auth != null && auth.isAuthenticated()) {
+//            Object principal = auth.getPrincipal();
+//            if (principal instanceof CustomUserDetails) {
+//                userDetails = (CustomUserDetails) principal;
+//                String uuid = userDetails.getUser().getUuid();
+//
+//                Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+//                for( GrantedAuthority authority : authorities ) {
+//                    System.out.println("ggggg=  " + authority.getAuthority());
+//                }
+//
+//                // Use these details as needed
+//                System.out.println("Username: " + uuid);
+//                System.out.println("Authorities: " + authorities);
+//            } else {
+//                // Handle cases where the principal is not an instance of UserDetails
+//                System.out.println("Authenticated principal is not of type UserDetails");
+//            }
+//        } else {
+//            System.out.println("Authentication failed or was not performed");
+//        }
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+
+        return LoginResponse.builder()
+                .email(userDetails.getUser().getEmail())
+                .profile(userDetails.getUser().getProfile())
+                .userName(userDetails.getUser().getUserName())
+                .uuidUser(userDetails.getUser().getUuid())
+                .token(AuthResponse.builder()
+                        .tokenType("Bearer")
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build())
+                .roles(roles)
                 .build();
-
     }
 
 

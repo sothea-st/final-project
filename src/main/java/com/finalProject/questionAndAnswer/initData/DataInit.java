@@ -1,6 +1,5 @@
 package com.finalProject.questionAndAnswer.initData;
 
-import com.finalProject.questionAndAnswer.constant.UUIDConstant;
 import com.finalProject.questionAndAnswer.domain.Role;
 import com.finalProject.questionAndAnswer.domain.User;
 import com.finalProject.questionAndAnswer.feature.user.RoleRepository;

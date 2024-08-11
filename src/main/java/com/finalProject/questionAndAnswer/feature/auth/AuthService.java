@@ -13,7 +13,8 @@ public interface AuthService {
     void verify(VerifyRequest verifyRequest);
 
 
-    AuthResponse login(LoginRequest loginRequest);
+    LoginResponse login(LoginRequest loginRequest);
+
 
     AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
 }
