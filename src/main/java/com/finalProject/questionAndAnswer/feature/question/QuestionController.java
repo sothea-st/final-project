@@ -1,8 +1,7 @@
-package com.finalProject.questionAndAnswer.feature.questions;
+package com.finalProject.questionAndAnswer.feature.question;
 
-import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionRequest;
-import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionResponse;
-import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionUpdateRequest;
+import com.finalProject.questionAndAnswer.feature.question.dto.QuestionRequest;
+import com.finalProject.questionAndAnswer.feature.question.dto.QuestionUpdateRequest;
 import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.JavaResponseCollection;
 import jakarta.validation.Valid;
@@ -14,9 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/questions")
 @RequiredArgsConstructor
 public class QuestionController {
-    /**
-     * Inject bean service
-     */
+
     private final QuestionService questionService;
 
 
@@ -24,6 +21,7 @@ public class QuestionController {
     JavaResponse<?> createQuestion(@Valid @RequestBody QuestionRequest questionRequest) {
         return questionService.createQuestion(questionRequest);
     }
+
 
     @GetMapping("/user/{uuidUser}")
     JavaResponseCollection<?> readQuestionsByUser(
@@ -34,16 +32,19 @@ public class QuestionController {
         return questionService.readQuestionsByUser(pageNumber, pageSize, uuidUser);
     }
 
+
     @GetMapping("/{uuidQuestion}")
     JavaResponse<?> readQuestionByUuid(@PathVariable("uuidQuestion") String uuidQuestion) {
         return  questionService.readQuestionByUuid(uuidQuestion);
     }
+
 
     @PutMapping("/{uuidQuestion}")
     JavaResponse<?> updateQuestionByUser(@Valid @PathVariable("uuidQuestion") String uuidQuestion ,
                                          @Valid @RequestBody QuestionUpdateRequest questionUpdateRequest) {
         return questionService.updateQuestionByUser(questionUpdateRequest, uuidQuestion);
     }
+
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{uuidQuestion}")

@@ -33,4 +33,12 @@ public record ResponseLink(
         return links;
     }
 
+    public static ResponseLink links(String endpoint,boolean methodDelete) {
+        return ResponseLink.builder()
+                .detail("delete")
+                .href(endpoint)
+                .method("DELETE")
+                .build();
+    }
+
 }

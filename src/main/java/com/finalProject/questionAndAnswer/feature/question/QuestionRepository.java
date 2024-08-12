@@ -1,4 +1,4 @@
-package com.finalProject.questionAndAnswer.feature.questions;
+package com.finalProject.questionAndAnswer.feature.question;
 
 import com.finalProject.questionAndAnswer.domain.Question;
 import com.finalProject.questionAndAnswer.domain.User;

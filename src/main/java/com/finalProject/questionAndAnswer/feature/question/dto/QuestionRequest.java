@@ -1,7 +1,7 @@
-package com.finalProject.questionAndAnswer.feature.questions.dto;
+package com.finalProject.questionAndAnswer.feature.question.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package com.finalProject.questionAndAnswer.feature.questions;
+package com.finalProject.questionAndAnswer.feature.question;
 
-import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionRequest;
-import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionUpdateRequest;
+import com.finalProject.questionAndAnswer.feature.question.dto.QuestionRequest;
+import com.finalProject.questionAndAnswer.feature.question.dto.QuestionUpdateRequest;
 import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.JavaResponseCollection;
 

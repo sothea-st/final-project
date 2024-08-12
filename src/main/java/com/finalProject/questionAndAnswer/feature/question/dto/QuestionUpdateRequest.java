@@ -1,4 +1,4 @@
-package com.finalProject.questionAndAnswer.feature.questions.dto;
+package com.finalProject.questionAndAnswer.feature.question.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

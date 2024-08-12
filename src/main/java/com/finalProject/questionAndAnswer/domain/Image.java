@@ -26,7 +26,7 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "image_name")
+    @Column(name = "image_name",unique = true,nullable = false)
     private String imageName;
 
     @Column(name = "uuid" , nullable = false , unique = true)

@@ -5,7 +5,9 @@ import com.finalProject.questionAndAnswer.domain.User;
 import com.finalProject.questionAndAnswer.feature.user.RoleRepository;
 import com.finalProject.questionAndAnswer.feature.user.UserRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
+@Getter
 public class DataInit {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -21,7 +24,6 @@ public class DataInit {
 
     @PostConstruct
     public void initData(){
-
 
         if( userRepository.count() == 0 ) {
 

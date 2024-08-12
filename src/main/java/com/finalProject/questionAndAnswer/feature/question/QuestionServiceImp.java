@@ -1,16 +1,16 @@
-package com.finalProject.questionAndAnswer.feature.questions;
+package com.finalProject.questionAndAnswer.feature.question;
 
 import com.finalProject.questionAndAnswer.domain.Image;
 import com.finalProject.questionAndAnswer.domain.Question;
 import com.finalProject.questionAndAnswer.domain.User;
-import com.finalProject.questionAndAnswer.feature.questions.dto.ImageResponse;
-import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionRequest;
-import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionResponse;
-import com.finalProject.questionAndAnswer.feature.questions.dto.QuestionUpdateRequest;
+import com.finalProject.questionAndAnswer.feature.image.ImageRepository;
+import com.finalProject.questionAndAnswer.feature.image.dto.ImageResponse;
+import com.finalProject.questionAndAnswer.feature.question.dto.QuestionRequest;
+import com.finalProject.questionAndAnswer.feature.question.dto.QuestionResponse;
+import com.finalProject.questionAndAnswer.feature.question.dto.QuestionUpdateRequest;
 import com.finalProject.questionAndAnswer.feature.user.UserRepository;
 import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.JavaResponseCollection;
-import com.finalProject.questionAndAnswer.response_success.ResponseSuccess;
 import com.finalProject.questionAndAnswer.utils.ResponseLink;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -56,55 +54,62 @@ public class QuestionServiceImp implements QuestionService {
      */
     @Override
     public JavaResponse<?> createQuestion(QuestionRequest questionRequest) {
-        /**
-         *  validate user exist or not
-         */
-        User user = userRepository.findByUuid(questionRequest.uuidUser())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        userNotFound + questionRequest.uuidUser()));
+        try {
+            /**
+             *  validate user exist or not
+             */
+            User user = userRepository.findByUuid(questionRequest.uuidUser())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            userNotFound + questionRequest.uuidUser()));
 
 
-        String uuidQuestion = UUID.randomUUID().toString();
+            String uuidQuestion = UUID.randomUUID().toString();
 
-        /**
-         * create object Question and set value
-         */
-        Question question = new Question();
-        question.setUser(user);
-        question.setTitle(questionRequest.title());
-        question.setContent(questionRequest.content());
-        question.setSnippedCode(questionRequest.snippedCode());
-        question.setIsDeleted(true);
-        question.setUuid(uuidQuestion);
-
-        questionRepository.save(question);
-
-
-        /**
-         * save imageName to images table
-         */
-        questionRequest.images().forEach(image -> {
-            Image image1 = new Image();
-            image1.setQuestion(question);
-            image1.setImageName(image);
-            image1.setIsDeleted(true);
-            image1.setUuid(UUID.randomUUID().toString());
-            imageRepository.save(image1);
-        });
-
-        /**
-         * get list image
-         */
-        List<Image> images = imageRepository.findByQuestionAndIsDeletedTrue(question);
-        question.setImages(images);
+            /**
+             * create object Question and set value
+             */
+            Question question = new Question();
+            question.setUser(user);
+            question.setTitle(questionRequest.title());
+            question.setContent(questionRequest.content());
+            question.setSnippedCode(questionRequest.snippedCode());
+            question.setIsDeleted(true);
+            question.setUuid(uuidQuestion);
+            questionRepository.save(question);
 
 
-        /**
-         * return type JavaResponse
-         */
-        return JavaResponse.builder()
-                .data(mapToQuestionResponse(question))
-                .build();
+            /**
+             * save imageName to images table
+             */
+            if (questionRequest.images() != null || !questionRequest.images().isEmpty()) {
+                questionRequest.images().forEach(image -> {
+                    Image image1 = new Image();
+                    image1.setQuestion(question);
+                    image1.setImageName(image);
+                    image1.setIsDeleted(true);
+                    image1.setUuid(UUID.randomUUID().toString());
+                    imageRepository.save(image1);
+                });
+            }
+
+
+            /**
+             * get list image
+             */
+            List<Image> images = imageRepository.findByQuestionAndIsDeletedTrue(question);
+            question.setImages(images);
+
+
+            /**
+             * return type JavaResponse
+             */
+            return JavaResponse.builder()
+                    .data(mapToQuestionResponse(question))
+                    .build();
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ERROR INTERNAL_SERVER_ERROR : " + e);
+        }
     }
 
     /**
@@ -156,42 +161,53 @@ public class QuestionServiceImp implements QuestionService {
     @Override
     public JavaResponse<?> updateQuestionByUser(QuestionUpdateRequest questionUpdateRequest, String uuidQuestion) {
 
-        /**
-         *  validate Question exist or not
-         */
-        Question question = questionRepository.findByUuidAndIsDeletedTrue(uuidQuestion)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, questionNotFound + uuidQuestion));
+        try {
+            /**
+             *  validate Question exist or not
+             */
+            Question question = questionRepository.findByUuidAndIsDeletedTrue(uuidQuestion)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, questionNotFound + uuidQuestion));
 
-        /**
-         * set new value
-         */
-        question.setTitle(questionUpdateRequest.title());
-        question.setContent(questionUpdateRequest.content());
-        question.setSnippedCode(questionUpdateRequest.snippedCode());
-        questionRepository.save(question);
-
-
-        /**
-         * update imageName
-         */
-//        question.getImages().forEach(image -> {
-//            Image img = imageRepository.findByUuid(image.getUuid())
-//                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, imageNotFound + image.getUuid()));
-//            img.setImageName(UUID.randomUUID().toString());
-//            imageRepository.save(img);
-//        });
+            /**
+             * set new value
+             */
+            question.setTitle(questionUpdateRequest.title());
+            question.setContent(questionUpdateRequest.content());
+            question.setSnippedCode(questionUpdateRequest.snippedCode());
+            questionRepository.save(question);
 
 
-        /**
-         * get list image
-         */
-        List<Image> images = imageRepository.findByQuestionAndIsDeletedTrue(question);
-        question.setImages(images);
+            /**
+             * add new image
+             */
+            if (questionUpdateRequest.images() != null || !questionUpdateRequest.images().isEmpty()) {
+                questionUpdateRequest.images().forEach(image -> {
+                    // if imageName already exists it won't add new
+                    if (!imageRepository.existsByImageName(image)) {
+                        Image img = new Image();
+                        img.setQuestion(question);
+                        img.setImageName(image);
+                        img.setIsDeleted(true);
+                        img.setUuid(UUID.randomUUID().toString());
+                        imageRepository.save(img);
+                    }
+                });
+            }
 
 
-        return JavaResponse.builder()
-                .data(mapToQuestionResponse(question))
-                .build();
+            /**
+             * get list image
+             */
+            List<Image> images = imageRepository.findByQuestionAndIsDeletedTrue(question);
+            question.setImages(images);
+
+            return JavaResponse.builder()
+                    .data(mapToQuestionResponse(question))
+                    .build();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ERROR INTERNAL_SERVER_ERROR : " + e);
+        }
+
     }
 
 
@@ -246,6 +262,7 @@ public class QuestionServiceImp implements QuestionService {
                                 .name(img.getImageName())
                                 .uuidImage(img.getUuid())
                                 .url(baseUrl + img.getImageName())
+                                .links(ResponseLink.links(baseUrl + "images/" + img.getImageName(), true))
                                 .build()).toList() : null
                 )
                 .build();

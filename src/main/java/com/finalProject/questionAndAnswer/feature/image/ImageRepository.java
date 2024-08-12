@@ -1,4 +1,4 @@
-package com.finalProject.questionAndAnswer.feature.questions;
+package com.finalProject.questionAndAnswer.feature.image;
 
 import com.finalProject.questionAndAnswer.domain.Image;
 import com.finalProject.questionAndAnswer.domain.Question;
@@ -11,6 +11,10 @@ public interface ImageRepository extends JpaRepository<Image,Integer> {
 
     List<Image> findByQuestionAndIsDeletedTrue(Question question);
 
-
     Optional<Image> findByUuid(String uuid);
+
+    Optional<Image> findByImageName(String imageName);
+
+    boolean existsByImageName(String imageName);
+
 }

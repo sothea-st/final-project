@@ -1,7 +1,7 @@
-package com.finalProject.questionAndAnswer.feature.questions.dto;
+package com.finalProject.questionAndAnswer.feature.question.dto;
 
+import com.finalProject.questionAndAnswer.feature.image.dto.ImageResponse;
 import com.finalProject.questionAndAnswer.utils.ResponseLink;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 import java.util.List;
