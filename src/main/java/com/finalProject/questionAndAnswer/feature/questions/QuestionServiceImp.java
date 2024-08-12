@@ -41,6 +41,7 @@ public class QuestionServiceImp implements QuestionService {
      */
     private final String userNotFound = "User not found with uuid : ";
     private final String questionNotFound = "Question not found with uuid : ";
+    private final String imageNotFound = "Image not found with uuid : ";
 
 
     @Value("${base-url}")
@@ -169,6 +170,25 @@ public class QuestionServiceImp implements QuestionService {
         question.setSnippedCode(questionUpdateRequest.snippedCode());
         questionRepository.save(question);
 
+
+        /**
+         * update imageName
+         */
+//        question.getImages().forEach(image -> {
+//            Image img = imageRepository.findByUuid(image.getUuid())
+//                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, imageNotFound + image.getUuid()));
+//            img.setImageName(UUID.randomUUID().toString());
+//            imageRepository.save(img);
+//        });
+
+
+        /**
+         * get list image
+         */
+        List<Image> images = imageRepository.findByQuestionAndIsDeletedTrue(question);
+        question.setImages(images);
+
+
         return JavaResponse.builder()
                 .data(mapToQuestionResponse(question))
                 .build();
@@ -221,11 +241,11 @@ public class QuestionServiceImp implements QuestionService {
                 .snippedCode(question.getSnippedCode())
                 .uuidQuestion(question.getUuid())
                 .links(ResponseLink.links(baseUrl + "questions/" + question.getUuid()))
-                .images( question.getImages() != null ? question.getImages().stream()
+                .images(question.getImages() != null ? question.getImages().stream()
                         .map(img -> ImageResponse.builder()
                                 .name(img.getImageName())
                                 .uuidImage(img.getUuid())
-                                .url(baseUrl+img.getImageName())
+                                .url(baseUrl + img.getImageName())
                                 .build()).toList() : null
                 )
                 .build();
