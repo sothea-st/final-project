@@ -18,14 +18,23 @@ import java.util.UUID;
 
 @Service
 public class FileUploadServiceImp implements FileUploadService {
-
+    /**
+     * server-path get value from application.properties
+     */
     @Value("${server-path}")
     private String serverPath;
 
+    /**
+     * file-upload.base-uri get value from application.properties
+     */
     @Value("${file-upload.base-uri}")
     private String baseUri;
 
-
+    /**
+     * file upload
+     * @param file is object MultipartFile
+     * @return object JavaResponse
+     */
     @Override
     public JavaResponse<?> fileUpload(MultipartFile file) {
         return JavaResponse.builder()
@@ -33,6 +42,11 @@ public class FileUploadServiceImp implements FileUploadService {
                 .build();
     }
 
+    /**
+     * fileUploadResponse
+     * @param file from MultipartFile
+     * @return object FileUploadResponse
+     */
     private FileUploadResponse fileUploadResponse(MultipartFile file) {
         String fileName = UUID.randomUUID().toString();
         String extension = file.getOriginalFilename().split("\\.")[1];
@@ -51,6 +65,11 @@ public class FileUploadServiceImp implements FileUploadService {
                 .build();
     }
 
+    /**
+     * file uploadMultiple
+     * @param files is object MultipartFile
+     * @return object JavaResponse
+     */
     @Override
     public JavaResponse<?> fileUploadMultiple(List<MultipartFile> files) {
         List<FileUploadResponse> fileUploadResponses = new ArrayList<>();
@@ -61,6 +80,10 @@ public class FileUploadServiceImp implements FileUploadService {
 
     }
 
+    /**
+     * delete file
+     * @param fileName name of file
+     */
     @Override
     public void deleteByFileName(String fileName) {
         Path path = Paths.get(serverPath + fileName);

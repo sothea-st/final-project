@@ -46,8 +46,8 @@ public class DataInit {
             user.setRoles(List.of(role,role2,role3));
 
             User user1 = new User();
-            user1.setUserName("sonita");
-            user1.setEmail("sonita@gmail.com");
+            user1.setUserName("sothea1");
+            user1.setEmail("sothea1@gmail.com");
             user1.setPassword(passwordEncoder.encode("12345"));
             user1.setUuid(UUID.randomUUID().toString());
             user1.setIsDeleted(true);

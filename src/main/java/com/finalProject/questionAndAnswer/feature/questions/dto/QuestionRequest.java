@@ -3,6 +3,8 @@ package com.finalProject.questionAndAnswer.feature.questions.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public record QuestionRequest(
 
         @NotBlank(message = "The field uuidAuthor is required.")
@@ -14,6 +16,8 @@ public record QuestionRequest(
         @NotBlank(message = "The field content is required.")
         String content,
 
-        String snippedCode
+        String snippedCode,
+
+        List<String> images
 ) {
 }
