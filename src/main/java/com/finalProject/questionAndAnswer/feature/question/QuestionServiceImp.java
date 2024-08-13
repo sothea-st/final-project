@@ -254,13 +254,13 @@ public class QuestionServiceImp implements QuestionService {
                 .content(question.getContent())
                 .snippedCode(question.getSnippedCode())
                 .uuidQuestion(question.getUuid())
-                .links(ResponseLink.links(baseUrl + "questions/" + question.getUuid()))
-                .images(question.getImages() != null ? question.getImages().stream()
+                .link(ResponseLink.links(baseUrl + "questions/" + question.getUuid()))
+                .image(question.getImages() != null ? question.getImages().stream()
                         .map(img -> ImageResponse.builder()
                                 .name(img.getImageName())
                                 .uuidImage(img.getUuid())
                                 .url(baseUrl + img.getImageName())
-                                .links(ResponseLink.links(baseUrl + "images/" + img.getImageName(), true))
+                                .link(ResponseLink.methodDelete(baseUrl + "images/" + img.getImageName(),"endpoint for delete image"))
                                 .build()).toList() : null
                 )
                 .build();

@@ -45,6 +45,7 @@ public class DataInit {
             user.setPassword(passwordEncoder.encode("12345"));
             user.setUuid(UUID.randomUUID().toString());
             user.setIsDeleted(true);
+            user.setProfile("default_image_user.jpg");
             user.setRoles(List.of(role,role2,role3));
 
             User user1 = new User();
@@ -53,6 +54,7 @@ public class DataInit {
             user1.setPassword(passwordEncoder.encode("12345"));
             user1.setUuid(UUID.randomUUID().toString());
             user1.setIsDeleted(true);
+            user1.setProfile("default_image_user.jpg");
             user1.setRoles(List.of(role,role2,role3));
 
             userRepository.saveAll(List.of(user,user1));
