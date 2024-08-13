@@ -3,6 +3,7 @@ package com.finalProject.questionAndAnswer.feature.question;
 import com.finalProject.questionAndAnswer.domain.Question;
 import com.finalProject.questionAndAnswer.domain.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,7 @@ import java.util.Optional;
 public interface QuestionRepository extends JpaRepository<Question,Integer> {
     Page<Question> findByIsDeletedTrueAndUser(User user, Pageable pageable);
     Optional<Question> findByUuidAndIsDeletedTrue(String uuid);
+
+    Page<Question> findByIsDeletedTrue(PageRequest pageRequest);
+
 }
