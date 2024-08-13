@@ -59,14 +59,14 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
         Page<Question> pages = questionRepository.findByIsDeletedTrue(pageRequest);
 
         /**
-         * map data to questionResponse
+         * map data to PublicQuestionResponse
          */
         List<PublicQuestionResponse> publicQuestionResponses = pages.getContent().stream()
                 .map(question -> PublicQuestionResponse.builder()
                         .author(AuthorResponse.builder()
                                 .uuidUser(question.getUser().getUuid())
                                 .name(question.getUser().getUserName())
-                                .link(ResponseLink.methodGet(baseUrlImage + question.getUser().getProfile(), "endpoint for access profile photo author"))
+                                .link(ResponseLink.methodGet(baseUrlImage.replace("upload", "images") + question.getUser().getProfile(), "endpoint for access profile photo author"))
                                 .build())
                         .title(question.getTitle())
                         .content(question.getContent())
@@ -78,7 +78,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                                         .name(img.getImageName())
                                         .uuidImage(img.getUuid())
                                         .url(baseUrlImage + img.getImageName())
-                                        .link(ResponseLink.methodDelete(baseUrl + "images/" + img.getImageName(), "endpoint for delete image"))
+                                        .link(null)
                                         .build()).toList() : null
                         )
                         .postDate("")
