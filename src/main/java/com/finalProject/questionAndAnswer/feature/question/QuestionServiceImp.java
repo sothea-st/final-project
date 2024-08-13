@@ -41,9 +41,9 @@ public class QuestionServiceImp implements QuestionService {
     private final String questionNotFound = "Question not found with uuid : ";
     private final String imageNotFound = "Image not found with uuid : ";
 
-
     @Value("${base-url}")
     private String baseUrl;
+
 
 
     /**

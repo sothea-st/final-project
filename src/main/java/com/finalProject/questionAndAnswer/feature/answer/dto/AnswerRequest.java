@@ -2,6 +2,8 @@ package com.finalProject.questionAndAnswer.feature.answer.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.List;
+
 public record AnswerRequest(
         @NotBlank(message = "the field uuidUser is required")
         String uuidUser,
@@ -9,6 +11,8 @@ public record AnswerRequest(
         String uuidQuestion,
         @NotBlank(message = "the field answer is required")
         String answer,
-        String snippedCode
+        String snippedCode,
+
+        List<String> images
 ) {
 }
