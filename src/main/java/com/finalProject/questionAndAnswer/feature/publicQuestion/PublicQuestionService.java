@@ -1,5 +1,6 @@
 package com.finalProject.questionAndAnswer.feature.publicQuestion;
 
+import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.JavaResponseCollection;
 
 public interface PublicQuestionService {
@@ -10,4 +11,13 @@ public interface PublicQuestionService {
      * @return object JavaResponseCollection
      */
     JavaResponseCollection<?> publicQuestion(int pageNumber , int pageSize);
+
+
+    /**
+     * read detail public question
+     * @param uuidQuestion identity question
+     * @return object JavaResponse
+     */
+    JavaResponse<?> readDetailPublicQuestion(String uuidQuestion);
+
 }

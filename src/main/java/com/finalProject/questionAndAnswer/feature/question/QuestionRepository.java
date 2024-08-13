@@ -12,7 +12,5 @@ import java.util.Optional;
 public interface QuestionRepository extends JpaRepository<Question,Integer> {
     Page<Question> findByIsDeletedTrueAndUser(User user, Pageable pageable);
     Optional<Question> findByUuidAndIsDeletedTrue(String uuid);
-
     Page<Question> findByIsDeletedTrue(PageRequest pageRequest);
-
 }

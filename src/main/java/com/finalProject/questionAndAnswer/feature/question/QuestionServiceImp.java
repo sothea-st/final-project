@@ -58,7 +58,7 @@ public class QuestionServiceImp implements QuestionService {
         /**
          *  validate user exist or not
          */
-        User user = userRepository.findByUuid(questionRequest.uuidUser())
+        User user = userRepository.findByUuidAndIsDeletedTrue(questionRequest.uuidUser())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         userNotFound + questionRequest.uuidUser()));
 
@@ -131,7 +131,7 @@ public class QuestionServiceImp implements QuestionService {
         /**
          *  validate user exist or not
          */
-        User user = userRepository.findByUuid(uuidUser)
+        User user = userRepository.findByUuidAndIsDeletedTrue(uuidUser)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, userNotFound + uuidUser));
 
         Page<Question> page = questionRepository.findByIsDeletedTrueAndUser(user, pageRequest);

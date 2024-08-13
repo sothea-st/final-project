@@ -29,6 +29,9 @@ public class Question {
     @OneToMany(mappedBy = "question")
     private List<Comment> comments;
 
+    @OneToMany(mappedBy = "question")
+    private List<Answer> answers;
+
     @Column(name = "title" , nullable = false)
     private String title;
 

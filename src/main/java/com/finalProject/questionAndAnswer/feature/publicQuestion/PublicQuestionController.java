@@ -1,11 +1,9 @@
 package com.finalProject.questionAndAnswer.feature.publicQuestion;
 
+import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.JavaResponseCollection;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/public-questions")
@@ -25,6 +23,11 @@ public class PublicQuestionController {
             @RequestParam(name = "pageSize" ,defaultValue = "10" , required = false) int pageSize
     ) {
         return publicQuestionService.publicQuestion(pageNumber,pageSize);
+    }
+
+    @GetMapping("/{uuidQuestion}")
+    public JavaResponse<?> readDetailPublicQuestion(@PathVariable("uuidQuestion") String uuidQuestion){
+        return publicQuestionService.readDetailPublicQuestion(uuidQuestion);
     }
 
 

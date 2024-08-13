@@ -1,11 +1,15 @@
 package com.finalProject.questionAndAnswer.feature.publicQuestion;
 
 import com.finalProject.questionAndAnswer.domain.Question;
+import com.finalProject.questionAndAnswer.feature.answer.dto.AnswerResponse;
 import com.finalProject.questionAndAnswer.feature.image.dto.ImageResponse;
 import com.finalProject.questionAndAnswer.feature.publicQuestion.dto.AuthorResponse;
+import com.finalProject.questionAndAnswer.feature.publicQuestion.dto.CommentResponse;
+import com.finalProject.questionAndAnswer.feature.publicQuestion.dto.DetailQuestionResponse;
 import com.finalProject.questionAndAnswer.feature.publicQuestion.dto.PublicQuestionResponse;
 import com.finalProject.questionAndAnswer.feature.question.QuestionRepository;
 import com.finalProject.questionAndAnswer.feature.question.dto.QuestionResponse;
+import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.JavaResponseCollection;
 import com.finalProject.questionAndAnswer.utils.JavaConstant;
 import com.finalProject.questionAndAnswer.utils.ResponseLink;
@@ -14,7 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +43,54 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
     @Value("${file-upload.base-uri}")
     private String baseUrlImage;
 
+
+    @Override
+    public JavaResponse<?> readDetailPublicQuestion(String uuidQuestion) {
+        Question question = questionRepository.findByUuidAndIsDeletedTrue(uuidQuestion)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Question not found with uuid " + uuidQuestion
+                ));
+
+
+        /**
+         * map data to PublicQuestionResponse
+         */
+        DetailQuestionResponse detailQuestionResponses = DetailQuestionResponse.builder()
+                .title(question.getTitle())
+                .content(question.getContent())
+                .snippedCode(question.getSnippedCode())
+                .uuidQuestion(question.getUuid())
+                .postDate(JavaConstant.dateFormat(String.valueOf(question.getCreatedAt())))
+                .author(mapToAuthorResponse(question))
+                .image(question.getImages() != null ? question.getImages().stream()
+                        .map(img -> ImageResponse.builder()
+                                .name(img.getImageName())
+                                .uuidImage(img.getUuid())
+                                .url(baseUrlImage + img.getImageName())
+                                .link(null)
+                                .build()).toList() : null
+                )
+                .comment(question.getComments().stream()
+                        .map(comment -> CommentResponse.builder()
+                                .comment(comment.getComment())
+                                .userComment(question.getUser().getUserName())
+                                .profileImage(question.getUser().getProfile())
+                                .build()).toList())
+                .answer(question.getAnswers().stream()
+                        .map(answer -> AnswerResponse.builder()
+                                .answer(answer.getAnswer())
+                                .snippedCode(answer.getSnippedCode())
+                                .userName(answer.getUser().getUserName())
+                                .profileImage(answer.getUser().getProfile())
+                                .build()).toList()
+                )
+                .build();
+
+
+        return JavaResponse.builder()
+                .data(detailQuestionResponses)
+                .build();
+    }
 
     /**
      * retrieve all questions
@@ -63,16 +117,14 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
          */
         List<PublicQuestionResponse> publicQuestionResponses = pages.getContent().stream()
                 .map(question -> PublicQuestionResponse.builder()
-                        .author(AuthorResponse.builder()
-                                .uuidUser(question.getUser().getUuid())
-                                .name(question.getUser().getUserName())
-                                .link(ResponseLink.methodGet(baseUrlImage.replace("upload", "images") + question.getUser().getProfile(), "endpoint for access profile photo author"))
-                                .build())
                         .title(question.getTitle())
                         .content(question.getContent())
                         .snippedCode(question.getSnippedCode())
                         .uuidQuestion(question.getUuid())
-                        .link(ResponseLink.methodGet(baseUrl + "questions/" + question.getUuid(), "endpoint for access detail question"))
+                        .postDate(JavaConstant.dateFormat(String.valueOf(question.getCreatedAt())))
+                        .author(mapToAuthorResponse(question))
+                        .link(ResponseLink.methodGet(baseUrl + "public-questions/" + question.getUuid(),
+                                "endpoint for access detail question"))
                         .image(question.getImages() != null ? question.getImages().stream()
                                 .map(img -> ImageResponse.builder()
                                         .name(img.getImageName())
@@ -81,13 +133,21 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                                         .link(null)
                                         .build()).toList() : null
                         )
-                        .postDate("")
                         .build()).toList();
-
 
         return JavaResponseCollection.builder()
                 .count(pages.getTotalElements())
                 .data(publicQuestionResponses)
+                .build();
+    }
+
+    private AuthorResponse mapToAuthorResponse(Question question) {
+        return AuthorResponse.builder()
+                .uuidUser(question.getUser().getUuid())
+                .name(question.getUser().getUserName())
+                .link(ResponseLink.methodGet(
+                        baseUrlImage.replace("upload", "images") + question.getUser().getProfile(),
+                        "endpoint for access profile photo author"))
                 .build();
     }
 

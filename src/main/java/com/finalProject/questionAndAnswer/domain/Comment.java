@@ -27,9 +27,9 @@ public class Comment {
 
     @Column(name = "comment" , nullable = false , length = 1000)
     private String comment;
-
     @ManyToOne
     private Question question; // question_id
+
 
     @ManyToOne
     private Answer answer; // answer_id

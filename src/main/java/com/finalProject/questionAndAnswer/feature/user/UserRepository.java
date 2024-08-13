@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User,Integer> {
     Optional<User>  findByEmailAndIsDeletedTrue(String email);
     boolean existsByEmail(String email);
-    Optional<User> findByUuid(String uuid);
+    Optional<User> findByUuidAndIsDeletedTrue(String uuid);
 }
