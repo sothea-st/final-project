@@ -7,6 +7,6 @@ import lombok.Builder;
 public record AuthorResponse(
         String uuidUser,
         String name,
-        ResponseLink link
+        String profileImage
 ) {
 }

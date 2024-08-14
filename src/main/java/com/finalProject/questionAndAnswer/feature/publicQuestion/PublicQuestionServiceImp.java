@@ -119,20 +119,10 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                 .map(question -> PublicQuestionResponse.builder()
                         .title(question.getTitle())
                         .content(question.getContent())
-                        .snippedCode(question.getSnippedCode())
                         .uuidQuestion(question.getUuid())
                         .postDate(JavaConstant.dateFormat(String.valueOf(question.getCreatedAt())))
-                        .author(mapToAuthorResponse(question))
                         .link(ResponseLink.methodGet(baseUrl + "public-questions/" + question.getUuid(),
                                 "endpoint for access detail question"))
-                        .image(question.getImages() != null ? question.getImages().stream()
-                                .map(img -> ImageResponse.builder()
-                                        .name(img.getImageName())
-                                        .uuidImage(img.getUuid())
-                                        .url(baseUrlImage + img.getImageName())
-                                        .link(null)
-                                        .build()).toList() : null
-                        )
                         .build()).toList();
 
         return JavaResponseCollection.builder()
@@ -145,9 +135,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
         return AuthorResponse.builder()
                 .uuidUser(question.getUser().getUuid())
                 .name(question.getUser().getUserName())
-                .link(ResponseLink.methodGet(
-                        baseUrlImage.replace("upload", "images") + question.getUser().getProfile(),
-                        "endpoint for access profile photo author"))
+                .profileImage(baseUrlImage.replace("upload", "images") )
                 .build();
     }
 
