@@ -78,6 +78,7 @@ public class AuthServiceImp implements AuthService {
         user.setPassword(passwordEncoder.encode(registerRequest.password()));
         user.setEmail(registerRequest.email());
         user.setIsDeleted(true);
+        user.setProfile("default_image_user.jpg");
         user.setUuid(UUID.randomUUID().toString());
         Role roleUser = roleRepository.findRoleUser();
         Role roleAuthor = roleRepository.findRoleAuthor();
