@@ -9,11 +9,8 @@ import java.util.List;
 public record PublicQuestionResponse(
         String title,
         String content,
-        String snippedCode,
         String uuidQuestion,
         String postDate,
-        AuthorResponse author,
-        ResponseLink link,
-        List<ImageResponse> image
+        ResponseLink link
 ) {
 }

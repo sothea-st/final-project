@@ -45,7 +45,6 @@ public class QuestionServiceImp implements QuestionService {
     private String baseUrl;
 
 
-
     /**
      * create question
      *
@@ -104,7 +103,7 @@ public class QuestionServiceImp implements QuestionService {
          * return type JavaResponse
          */
         return JavaResponse.builder()
-                .data(mapToQuestionResponse(question))
+                .data(mapToQuestionResponse(question,true))
                 .build();
 
 
@@ -141,7 +140,7 @@ public class QuestionServiceImp implements QuestionService {
          * stream page to List<QuestionResponse>
          */
         List<QuestionResponse> questionResponses = page.stream()
-                .map(this::mapToQuestionResponse).toList();
+                .map(question -> mapToQuestionResponse(question,true)).toList();
 
 
         return JavaResponseCollection.builder()
@@ -159,7 +158,7 @@ public class QuestionServiceImp implements QuestionService {
     @Override
     public JavaResponse<?> updateQuestionByUser(QuestionUpdateRequest questionUpdateRequest, String uuidQuestion) {
 
-        try {
+
             /**
              *  validate Question exist or not
              */
@@ -200,12 +199,8 @@ public class QuestionServiceImp implements QuestionService {
             question.setImages(images);
 
             return JavaResponse.builder()
-                    .data(mapToQuestionResponse(question))
+                    .data(mapToQuestionResponse(question,null))
                     .build();
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ERROR INTERNAL_SERVER_ERROR : " + e);
-        }
-
     }
 
 
@@ -224,7 +219,7 @@ public class QuestionServiceImp implements QuestionService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, questionNotFound + uuidQuestion));
 
         return JavaResponse.builder()
-                .data(mapToQuestionResponse(question))
+                .data(mapToQuestionResponse(question,null))
                 .build();
     }
 
@@ -248,19 +243,19 @@ public class QuestionServiceImp implements QuestionService {
      * @param question object Question
      * @return object QuestionResponse
      */
-    private QuestionResponse mapToQuestionResponse(Question question) {
+    private QuestionResponse mapToQuestionResponse(Question question,Boolean link) {
         return QuestionResponse.builder()
                 .title(question.getTitle())
                 .content(question.getContent())
                 .snippedCode(question.getSnippedCode())
                 .uuidQuestion(question.getUuid())
-                .link(ResponseLink.links(baseUrl + "questions/" + question.getUuid()))
+                .links(link != null ? ResponseLink.links(baseUrl + "questions/" + question.getUuid()) : null)
                 .image(question.getImages() != null ? question.getImages().stream()
                         .map(img -> ImageResponse.builder()
                                 .name(img.getImageName())
                                 .uuidImage(img.getUuid())
                                 .url(baseUrl + img.getImageName())
-                                .link(ResponseLink.methodDelete(baseUrl + "images/" + img.getImageName(),"endpoint for delete image"))
+                                .link(ResponseLink.methodDelete(baseUrl + "images/" + img.getImageName(), "endpoint for delete image"))
                                 .build()).toList() : null
                 )
                 .build();

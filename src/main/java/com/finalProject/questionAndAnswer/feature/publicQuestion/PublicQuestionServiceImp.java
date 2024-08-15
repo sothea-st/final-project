@@ -119,20 +119,10 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                 .map(question -> PublicQuestionResponse.builder()
                         .title(question.getTitle())
                         .content(question.getContent())
-                        .snippedCode(question.getSnippedCode())
                         .uuidQuestion(question.getUuid())
                         .postDate(JavaConstant.dateFormat(String.valueOf(question.getCreatedAt())))
-                        .author(mapToAuthorResponse(question))
                         .link(ResponseLink.methodGet(baseUrl + "public-questions/" + question.getUuid(),
-                                "endpoint for access detail question"))
-                        .image(question.getImages() != null ? question.getImages().stream()
-                                .map(img -> ImageResponse.builder()
-                                        .name(img.getImageName())
-                                        .uuidImage(img.getUuid())
-                                        .url(baseUrlImage + img.getImageName())
-                                        .link(null)
-                                        .build()).toList() : null
-                        )
+                                "endpoint for get detail question"))
                         .build()).toList();
 
         return JavaResponseCollection.builder()

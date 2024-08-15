@@ -7,7 +7,7 @@ import java.util.List;
 
 @Builder
 public record ResponseLink(
-        String detail,
+        String rel,
         String endpoint,
         String method
 ) {
@@ -15,17 +15,17 @@ public record ResponseLink(
     public static List<ResponseLink> links(String endpoint) {
         List<ResponseLink> links = new ArrayList<>();
         links.add(ResponseLink.builder()
-                .detail("endpoint for access detail")
+                .rel("self")
                 .endpoint(endpoint)
                 .method("GET")
                 .build());
         links.add(ResponseLink.builder()
-                .detail("endpoint for access update")
+                .rel("update")
                 .endpoint(endpoint)
                 .method("PUT")
                 .build());
         links.add(ResponseLink.builder()
-                .detail("endpoint for access delete")
+                .rel("delete")
                 .endpoint(endpoint)
                 .method("DELETE")
                 .build());
@@ -34,7 +34,7 @@ public record ResponseLink(
 
     public static ResponseLink methodDelete(String endpoint,String detail) {
         return ResponseLink.builder()
-                .detail(detail)
+                .rel(detail)
                 .endpoint(endpoint)
                 .method("DELETE")
                 .build();
@@ -42,7 +42,7 @@ public record ResponseLink(
 
     public static ResponseLink methodGet(String endpoint,String detail) {
         return ResponseLink.builder()
-                .detail(detail)
+                .rel(detail)
                 .endpoint(endpoint)
                 .method("GET")
                 .build();

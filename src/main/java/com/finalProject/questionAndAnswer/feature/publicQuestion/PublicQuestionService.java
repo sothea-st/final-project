@@ -14,7 +14,7 @@ public interface PublicQuestionService {
 
 
     /**
-     * read detail public question
+     * read rel public question
      * @param uuidQuestion identity question
      * @return object JavaResponse
      */
