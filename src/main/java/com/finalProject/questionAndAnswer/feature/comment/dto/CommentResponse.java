@@ -1,4 +1,4 @@
-package com.finalProject.questionAndAnswer.feature.publicQuestion.dto;
+package com.finalProject.questionAndAnswer.feature.comment.dto;
 
 import lombok.Builder;
 
@@ -7,7 +7,7 @@ public record CommentResponse(
         String comment,
         String uuidComment,
         String userComment,
-        String uuidUser,
-        String profileImage
+        String profile
+
 ) {
 }

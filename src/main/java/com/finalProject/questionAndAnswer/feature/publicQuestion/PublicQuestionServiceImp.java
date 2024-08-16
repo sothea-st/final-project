@@ -1,5 +1,6 @@
 package com.finalProject.questionAndAnswer.feature.publicQuestion;
 
+import com.finalProject.questionAndAnswer.domain.Comment;
 import com.finalProject.questionAndAnswer.domain.Question;
 import com.finalProject.questionAndAnswer.feature.answer.dto.AnswerResponse;
 import com.finalProject.questionAndAnswer.feature.image.dto.ImageResponse;
@@ -21,9 +22,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -71,10 +72,14 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                                 .build()).toList() : null
                 )
                 .comment(question.getComments().stream()
+                        .filter(Comment::getIsDeleted)
+                        .sorted(Comparator.comparing(Comment::getCreatedAt))
                         .map(comment -> CommentResponse.builder()
                                 .comment(comment.getComment())
-                                .userComment(question.getUser().getUserName())
-                                .profileImage(question.getUser().getProfile())
+                                .userComment(comment.getUser().getUserName())
+                                .uuidUser(comment.getUser().getUuid())
+                                .uuidComment(comment.getUuid())
+                                .profileImage(baseUrlImage.replace("upload","images")+question.getUser().getProfile())
                                 .build()).toList())
                 .answer(question.getAnswers().stream()
                         .map(answer -> AnswerResponse.builder()
@@ -135,7 +140,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
         return AuthorResponse.builder()
                 .uuidUser(question.getUser().getUuid())
                 .name(question.getUser().getUserName())
-                .profileImage(baseUrlImage.replace("upload", "images") )
+                .profileImage(baseUrlImage.replace("upload","images")+question.getUser().getProfile())
                 .build();
     }
 

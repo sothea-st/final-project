@@ -1,5 +1,6 @@
 package com.finalProject.questionAndAnswer.feature.question.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.finalProject.questionAndAnswer.feature.image.dto.ImageResponse;
 import com.finalProject.questionAndAnswer.utils.ResponseLink;
 import lombok.Builder;
@@ -12,7 +13,9 @@ public record QuestionResponse(
         String content,
         String snippedCode,
         String uuidQuestion,
-        List<ResponseLink> link,
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        List<ResponseLink> links,
+
         List<ImageResponse> image
 ) {
 }

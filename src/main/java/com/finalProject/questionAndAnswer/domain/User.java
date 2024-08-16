@@ -58,7 +58,6 @@ public class User {
     private List<Vote> votes;
 
 
-
     @ManyToMany
     @JoinTable(
         name = "users_roles",
