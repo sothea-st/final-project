@@ -8,6 +8,7 @@ public record CommentResponse(
         String uuidComment,
         String userComment,
         String uuidUser,
-        String profileImage
+        String profileImage,
+        String postDate
 ) {
 }

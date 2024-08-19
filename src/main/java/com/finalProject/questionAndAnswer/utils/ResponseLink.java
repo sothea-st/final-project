@@ -40,6 +40,14 @@ public record ResponseLink(
                 .build();
     }
 
+    public static ResponseLink methodPut(String endpoint,String detail) {
+        return ResponseLink.builder()
+                .rel(detail)
+                .endpoint(endpoint)
+                .method("PUT")
+                .build();
+    }
+
     public static ResponseLink methodGet(String endpoint,String detail) {
         return ResponseLink.builder()
                 .rel(detail)

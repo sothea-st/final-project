@@ -33,6 +33,9 @@ public class Answer {
     private List<Vote> votes;
 
     @OneToMany(mappedBy = "answer")
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "answer")
     private List<Image> images;
 
     @Column(name = "answer" , nullable = false)

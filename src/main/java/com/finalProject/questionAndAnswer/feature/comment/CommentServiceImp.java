@@ -1,14 +1,18 @@
 package com.finalProject.questionAndAnswer.feature.comment;
 
+import com.finalProject.questionAndAnswer.domain.Answer;
 import com.finalProject.questionAndAnswer.domain.Comment;
 import com.finalProject.questionAndAnswer.domain.Question;
 import com.finalProject.questionAndAnswer.domain.User;
+import com.finalProject.questionAndAnswer.feature.answer.AnswerRepository;
+import com.finalProject.questionAndAnswer.feature.comment.dto.CommentAnswerRequest;
 import com.finalProject.questionAndAnswer.feature.comment.dto.CommentRequest;
 import com.finalProject.questionAndAnswer.feature.comment.dto.CommentResponse;
 import com.finalProject.questionAndAnswer.feature.question.QuestionRepository;
 import com.finalProject.questionAndAnswer.feature.user.UserRepository;
 import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.ResponseSuccess;
+import com.finalProject.questionAndAnswer.utils.JavaConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -27,11 +31,13 @@ public class CommentServiceImp implements CommentService {
     private final CommentRepository commentRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+    private final AnswerRepository answerRepository;
 
     /**
      * variable not found
      */
     private String questionNotFound = "Question not found with uuid : ";
+    private String answertNotFound = "Answer not found with uuid : ";
     private String commentNotFound = "Comment not found with uuid : ";
 
 
@@ -87,18 +93,36 @@ public class CommentServiceImp implements CommentService {
 
     @Override
     public JavaResponse<?> addComment(CommentRequest commentRequest) {
+        return mapToCommentResponse(commentRequest);
+    }
 
-        // Validate and retrieve the question
-        Question question = questionRepository.findByUuidAndIsDeletedTrue(commentRequest.uuidQuestion())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        questionNotFound + commentRequest.uuidQuestion()));
+    private JavaResponse<?> mapToCommentResponse(CommentRequest commentRequest) {
+
+        if (commentRequest.uuidQuestion() == null && commentRequest.uuidAnswer() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the field uuidQuestion or uuidAnswer are required one of them");
+        }
 
         // Create a new comment
         Comment comment = new Comment();
+
+        if (commentRequest.uuidQuestion() != null) {
+            // Validate and retrieve the question
+            Question question = questionRepository.findByUuidAndIsDeletedTrue(commentRequest.uuidQuestion())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            questionNotFound + commentRequest.uuidQuestion()));
+            comment.setQuestion(question);
+        }
+        if(commentRequest.uuidAnswer() != null) {
+            Answer answer = answerRepository.findByUuidAndIsDeletedTrue(commentRequest.uuidAnswer())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            answertNotFound + commentRequest.uuidAnswer()));
+            comment.setAnswer(answer);
+        }
+
         comment.setComment(commentRequest.comment());
         comment.setUuid(UUID.randomUUID().toString());
         comment.setIsDeleted(true);
-        comment.setQuestion(question);
+
 
         // Retrieve the existing user by their uuid
         User user = userRepository.findByUuidAndIsDeletedTrue(commentRequest.uuidUser())
@@ -108,7 +132,6 @@ public class CommentServiceImp implements CommentService {
         // Add the comment to the user's list of comments
         user.getComments().add(comment);
         comment.setUser(user);
-
 
         // Save the comment and update the user
         commentRepository.save(comment);
@@ -121,6 +144,7 @@ public class CommentServiceImp implements CommentService {
                         .profile(baseUrlImage.replace("upload", "images") + user.getProfile())
                         .userComment(user.getUserName())
                         .uuidComment(comment.getUuid())
+                        .postDate(JavaConstant.dateFormat(String.valueOf(comment.getCreatedAt())))
                         .build())
                 .build();
     }

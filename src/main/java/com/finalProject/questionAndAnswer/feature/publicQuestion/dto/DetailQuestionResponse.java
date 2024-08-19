@@ -14,6 +14,7 @@ public record DetailQuestionResponse(
         String snippedCode,
         String uuidQuestion,
         String postDate,
+        Integer vote,
         AuthorResponse author,
         List<ImageResponse> image,
         List<CommentResponse> comment,

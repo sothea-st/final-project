@@ -25,8 +25,6 @@ public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "vote_type", length = 100 , nullable = false)
-    private String voteType;
 
     @Column(name = "uuid", nullable = false, unique = true)
     private String uuid;
