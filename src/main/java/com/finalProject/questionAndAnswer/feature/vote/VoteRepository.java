@@ -10,6 +10,5 @@ import java.util.Optional;
 public interface VoteRepository extends JpaRepository<Vote,Integer> {
     int countByIsDeletedTrue();
     int countByIsDeletedFalse();
-
     Vote findByUserAndQuestion(User user , Question question);
 }

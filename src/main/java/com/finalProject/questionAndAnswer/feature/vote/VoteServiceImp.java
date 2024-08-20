@@ -39,19 +39,14 @@ public class VoteServiceImp implements VoteService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Question not found with uuid " + voteRequestQuestion.uuidQuestion()));
 
-        Vote voteData = voteRepository.findByUserAndQuestion(user, question);
-        if( voteData == null ) {
-            Vote vote = new Vote();
-            vote.setQuestion(question);
-            vote.setUser(user);
-            vote.setIsDeleted(true);
-            vote.setUuid(UUID.randomUUID().toString());
-            voteRepository.save(vote);
-        } else {
-            System.out.println("ddddddddddd = " + voteData.getIsDeleted());
-        }
 
 
+        Vote vote = new Vote();
+        vote.setQuestion(question);
+        vote.setUser(user);
+        vote.setIsDeleted(true);
+        vote.setUuid(UUID.randomUUID().toString());
+        voteRepository.save(vote);
 
 
         int countSignPlus = voteRepository.countByIsDeletedTrue();

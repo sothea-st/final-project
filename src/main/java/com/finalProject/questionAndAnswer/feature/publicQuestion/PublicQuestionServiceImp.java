@@ -11,6 +11,7 @@ import com.finalProject.questionAndAnswer.feature.publicQuestion.dto.CommentResp
 import com.finalProject.questionAndAnswer.feature.publicQuestion.dto.DetailQuestionResponse;
 import com.finalProject.questionAndAnswer.feature.publicQuestion.dto.PublicQuestionResponse;
 import com.finalProject.questionAndAnswer.feature.question.QuestionRepository;
+import com.finalProject.questionAndAnswer.feature.vote.VoteRepository;
 import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.JavaResponseCollection;
 import com.finalProject.questionAndAnswer.utils.JavaConstant;
@@ -34,6 +35,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
      * inject bean repository
      */
     private final QuestionRepository questionRepository;
+    private final VoteRepository voteRepository;
 
     /**
      * get value from application.properties base-url
@@ -61,7 +63,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                 .snippedCode(question.getSnippedCode())
                 .uuidQuestion(question.getUuid())
                 .postDate(JavaConstant.dateFormat(String.valueOf(question.getCreatedAt())))
-                .vote(-10)
+//                .vote(question.getVotes())
                 .author(mapToAuthorResponse(question))
                 .image(mapToImageResponse(question))
                 .comment(mapToCommentResponse(question))
