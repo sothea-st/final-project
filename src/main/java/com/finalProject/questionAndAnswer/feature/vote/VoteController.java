@@ -1,5 +1,6 @@
 package com.finalProject.questionAndAnswer.feature.vote;
 
+import com.finalProject.questionAndAnswer.feature.vote.dto.VoteRequestAnswer;
 import com.finalProject.questionAndAnswer.feature.vote.dto.VoteRequestQuestion;
 import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import jakarta.validation.Valid;
@@ -16,9 +17,24 @@ public class VoteController {
     // inject bean service
     private final VoteService voteService;
 
-    @PostMapping
+    @PostMapping("/question")
     JavaResponse<?> postVote(@Valid @RequestBody VoteRequestQuestion voteRequestQuestion) {
         return voteService.addVoteQuestion(voteRequestQuestion);
+    }
+
+    @PostMapping("/remove-question")
+    JavaResponse<?> upVote(@Valid @RequestBody VoteRequestQuestion voteRequestQuestion) {
+        return voteService.unVoteQuestion(voteRequestQuestion);
+    }
+
+    @PostMapping("/answer")
+    JavaResponse<?> postVoteAnswer(@Valid @RequestBody VoteRequestAnswer voteRequestAnswer) {
+        return voteService.addVoteAnswer(voteRequestAnswer);
+    }
+
+    @PostMapping("/remove-answer")
+    JavaResponse<?> upVoteAnswer(@Valid @RequestBody VoteRequestAnswer voteRequestAnswer) {
+        return voteService.unVoteAnswer(voteRequestAnswer);
     }
 
 }

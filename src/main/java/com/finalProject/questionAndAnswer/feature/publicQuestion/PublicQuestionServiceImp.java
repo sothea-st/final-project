@@ -54,6 +54,11 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                         HttpStatus.NOT_FOUND, "Question not found with uuid " + uuidQuestion
                 ));
 
+
+        int countSignPlus = voteRepository.countByIsDeletedTrueAndQuestion(question);
+        int countSignMinus = voteRepository.countByIsDeletedFalseAndQuestion(question);
+        int totalSign = countSignPlus - countSignMinus;
+
         /**
          * map data to PublicQuestionResponse
          */
@@ -63,38 +68,44 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                 .snippedCode(question.getSnippedCode())
                 .uuidQuestion(question.getUuid())
                 .postDate(JavaConstant.dateFormat(String.valueOf(question.getCreatedAt())))
-//                .vote(question.getVotes())
+                .vote(totalSign)
                 .author(mapToAuthorResponse(question))
                 .image(mapToImageResponse(question))
                 .comment(mapToCommentResponse(question))
                 .answer(question.getAnswers().stream()
                         .filter(Answer::getIsDeleted)
                         .sorted(Comparator.comparing(Answer::getCreatedAt))
-                        .map(answer -> AnswerResponse.builder()
-                                .answer(answer.getAnswer())
-                                .snippedCode(answer.getSnippedCode())
-                                .postDate(JavaConstant.dateFormat(String.valueOf(answer.getCreatedAt())))
-                                .vote(2)
-                                .uuidAnswer(answer.getUuid())
-                                .author(AuthorResponse.builder()
-                                        .name(answer.getUser().getUserName())
-                                        .uuidUser(answer.getUser().getUuid())
-                                        .profileImage(baseUrlImage.replace("upload", "images") + answer.getUser().getProfile())
-                                        .build())
-                                .link(List.of(
-                                        ResponseLink.methodPut(baseUrl + "answers/" + answer.getUuid(), "endpoint for update"),
-                                        ResponseLink.methodDelete(baseUrl + "answers/" + answer.getUuid(), "endpoint for delete")
-                                ))
-                                .image(answer.getImages() != null ? answer.getImages().stream()
-                                        .map(img -> ImageResponse.builder()
-                                                .name(img.getImageName())
-                                                .uuidImage(img.getUuid())
-                                                .url(baseUrlImage + img.getImageName())
-                                                .link(ResponseLink.methodDelete(baseUrl + "images/" + img.getImageName(), "endpoint for delete image"))
-                                                .build()).toList() : null
-                                )
-                                .comments(mapToCommentResponse(answer,question))
-                                .build()).toList()
+                        .map(answer -> {
+                                    int countSignPlusAnswer = voteRepository.countByIsDeletedTrueAndAnswer(answer);
+                                    int countSignMinusAnswer = voteRepository.countByIsDeletedFalseAndAnswer(answer);
+                                    int totalSignAnswer = countSignPlusAnswer - countSignMinusAnswer;
+                                    return AnswerResponse.builder()
+                                            .answer(answer.getAnswer())
+                                            .snippedCode(answer.getSnippedCode())
+                                            .postDate(JavaConstant.dateFormat(String.valueOf(answer.getCreatedAt())))
+                                            .vote(totalSignAnswer)
+                                            .uuidAnswer(answer.getUuid())
+                                            .author(AuthorResponse.builder()
+                                                    .name(answer.getUser().getUserName())
+                                                    .uuidUser(answer.getUser().getUuid())
+                                                    .profileImage(baseUrlImage.replace("upload", "images") + answer.getUser().getProfile())
+                                                    .build())
+                                            .link(List.of(
+                                                    ResponseLink.methodPut(baseUrl + "answers/" + answer.getUuid(), "endpoint for update"),
+                                                    ResponseLink.methodDelete(baseUrl + "answers/" + answer.getUuid(), "endpoint for delete")
+                                            ))
+                                            .image(answer.getImages() != null ? answer.getImages().stream()
+                                                    .map(img -> ImageResponse.builder()
+                                                            .name(img.getImageName())
+                                                            .uuidImage(img.getUuid())
+                                                            .url(baseUrlImage + img.getImageName())
+                                                            .link(ResponseLink.methodDelete(baseUrl + "images/" + img.getImageName(), "endpoint for delete image"))
+                                                            .build()).toList() : null
+                                            )
+                                            .comments(mapToCommentResponse(answer, question))
+                                            .build();
+                                }
+                        ).toList()
                 )
                 .build();
 
@@ -175,8 +186,8 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                         .build()).toList();
     }
 
-    private List<CommentResponse> mapToCommentResponse(Answer answer , Question question){
-        return  answer.getComments().stream()
+    private List<CommentResponse> mapToCommentResponse(Answer answer, Question question) {
+        return answer.getComments().stream()
                 .filter(Comment::getIsDeleted)
                 .sorted(Comparator.comparing(Comment::getCreatedAt))
                 .map(c -> CommentResponse.builder()
