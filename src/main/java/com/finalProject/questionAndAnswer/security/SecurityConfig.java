@@ -94,10 +94,11 @@ public class SecurityConfig {
          *      add security to all endpoints
          */
         http.authorizeHttpRequests(endpoint -> endpoint
-                        .requestMatchers("/api/v1/auth/**","/upload/**").permitAll()
-                        .requestMatchers("/api/v1/**").hasAnyAuthority( "SCOPE_ADMIN")
+                        .requestMatchers("/api/auth/**","/upload/**").permitAll()
+                        .requestMatchers("/api/v1/**").hasAnyAuthority( "SCOPE_USER","SCOPE_ADMIN")
                         .requestMatchers("/images/**").hasAnyAuthority("SCOPE_USER","SCOPE_ADMIN")
-                        .requestMatchers("/api/v1/votes").hasAnyAuthority("SCOPE_USER","SCOPE_ADMIN")
+//                        .requestMatchers("/api/v1/votes").hasAnyAuthority("SCOPE_USER","SCOPE_ADMIN")
+
 //                        .requestMatchers("/api/v1/**").hasAnyAuthority("SCOPE_USER", "SCOPE_ADMIN") // SCOPE_  is default prefix and required when use jwt
 //                        .requestMatchers(HttpMethod.POST, "/api/v1/**").hasAnyAuthority("SCOPE_USER", "SCOPE_ADMIN")
 //                        .requestMatchers(HttpMethod.GET ,"/api/v1").authenticated()
