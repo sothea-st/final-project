@@ -1,6 +1,7 @@
 package com.finalProject.questionAndAnswer.feature.auth;
 
 import com.finalProject.questionAndAnswer.feature.auth.dto.*;
+import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import jakarta.mail.MessagingException;
 
 public interface AuthService {
@@ -10,10 +11,10 @@ public interface AuthService {
     void sendVerification(SendVerificationRequest sendVerificationRequest) throws MessagingException;
 
 
-    void verify(VerifyRequest verifyRequest);
+    LoginResponse verify(VerifyRequest verifyRequest);
 
 
-    LoginResponse login(LoginRequest loginRequest);
+    JavaResponse<?> login(LoginRequest loginRequest);
 
 
     AuthResponse refreshToken(RefreshTokenRequest refreshTokenRequest);

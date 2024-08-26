@@ -30,6 +30,9 @@ public class FileUploadServiceImp implements FileUploadService {
     @Value("${file-upload.base-uri}")
     private String baseUri;
 
+    @Value("${base-url.read-image}")
+    private String baseUrlImagePublic;
+
     /**
      * file upload
      * @param file is object MultipartFile
@@ -61,7 +64,7 @@ public class FileUploadServiceImp implements FileUploadService {
                 .name(fileName)
                 .contentType(file.getContentType())
                 .size(file.getSize())
-                .uri(baseUri + fileName)
+                .uri(baseUrlImagePublic + fileName)
                 .build();
     }
 

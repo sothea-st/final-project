@@ -7,8 +7,10 @@ import com.finalProject.questionAndAnswer.feature.auth.dto.*;
 import com.finalProject.questionAndAnswer.feature.user.RoleRepository;
 import com.finalProject.questionAndAnswer.feature.user.UserRepository;
 import com.finalProject.questionAndAnswer.feature.user.UserVerificationRepository;
+import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.security.CustomUserDetails;
 import com.finalProject.questionAndAnswer.security.UserDetailsServiceImp;
+import com.finalProject.questionAndAnswer.utils.JavaConstant;
 import com.finalProject.questionAndAnswer.utils.RandomUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -55,6 +57,7 @@ public class AuthServiceImp implements AuthService {
     private final JwtEncoder accessTokenJwtEncoder;
     private final JwtEncoder refreshTokenJwtEncoder;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private Authentication auth;
 
     @Value("${spring.mail.username}")
     private String emailAdmin;
@@ -127,7 +130,7 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public void verify(VerifyRequest verifyRequest) {
+    public LoginResponse verify(VerifyRequest verifyRequest) {
         User user = userRepository.findByEmailAndIsDeletedTrue(verifyRequest.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Email has not been found"));
 
@@ -143,6 +146,8 @@ public class AuthServiceImp implements AuthService {
         user.setIsVerify(true);
         userRepository.save(user);
         userVerificationRepository.delete(userVerification);
+
+         return loginSuccess(auth);
     }
 
 
@@ -199,7 +204,7 @@ public class AuthServiceImp implements AuthService {
 
 
     @Override
-    public LoginResponse login(LoginRequest loginRequest) {
+    public JavaResponse<?> login(LoginRequest loginRequest) {
         /**
          *          Authenticate client with username (phoneNumber) and password
          *          use class UserPasswordAuthenticationToken to check user secure or not , authenticate or not
@@ -209,11 +214,25 @@ public class AuthServiceImp implements AuthService {
          *          auth =daoAuthenticationProvider.authenticate(auth);
          */
 
-        Authentication auth = new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password());
+        auth = new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password());
 
         auth = daoAuthenticationProvider.authenticate(auth); // method authenticate() auto invoke security process
 
+        try {
+            sendVerification(SendVerificationRequest.builder()
+                    .email(loginRequest.email())
+                    .build());
+        } catch (Exception e) {
+            System.out.println("send verification failed : " + e);
+        }
 
+        return JavaResponse.builder()
+                .data("Please verify your identity. We've sent a verification code to " + JavaConstant.maskEmail(auth.getName()))
+                .build();
+    }
+
+
+    private LoginResponse loginSuccess(Authentication auth) {
         // scope is required add to payload
         String scope = auth.getAuthorities()
                 .stream()
@@ -302,6 +321,5 @@ public class AuthServiceImp implements AuthService {
                 .roles(roles)
                 .build();
     }
-
 
 }

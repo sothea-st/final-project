@@ -25,7 +25,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Email has not been found"));
 
         // verify email if null throw error
-        verifyEmail(user.getIsVerify());
+//        verifyEmail(user.getIsVerify());
 
         log.info("********************* User : {}" , user.getEmail() );
         CustomUserDetails customUserDetails = new CustomUserDetails();

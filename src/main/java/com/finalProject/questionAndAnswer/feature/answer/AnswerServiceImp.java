@@ -41,6 +41,10 @@ public class AnswerServiceImp implements AnswerService {
     private String baseUrlImage;
 
 
+    @Value("${base-url.read-image}")
+    private String baseUrlImagePublic;
+
+
     @Override
     public ResponseSuccess deleteAnswer(String uuidAnswer) {
 
@@ -113,9 +117,7 @@ public class AnswerServiceImp implements AnswerService {
                         .author(AuthorResponse.builder()
                                 .name(answer.getUser().getUserName())
                                 .uuidUser(answer.getUser().getUuid())
-                                .profileImage(
-                                        baseUrlImage.replace("upload", "images") + answer.getUser().getProfile()
-                                )
+                                .profileImage(baseUrlImagePublic+ answer.getUser().getProfile())
                                 .build())
                         .uuidAnswer(answer.getUuid())
                         .link(List.of(
@@ -126,7 +128,7 @@ public class AnswerServiceImp implements AnswerService {
                                 .map(img -> ImageResponse.builder()
                                         .name(img.getImageName())
                                         .uuidImage(img.getUuid())
-                                        .url(baseUrlImage + img.getImageName())
+                                        .url(baseUrlImagePublic + img.getImageName())
                                         .link(ResponseLink.methodDelete(baseUrl + "images/" + img.getImageName(), "endpoint for delete image"))
                                         .build()).toList() : null
                         )
@@ -189,9 +191,7 @@ public class AnswerServiceImp implements AnswerService {
                         .author(AuthorResponse.builder()
                                 .name(answer.getUser().getUserName())
                                 .uuidUser(answer.getUser().getUuid())
-                                .profileImage(
-                                        baseUrlImage.replace("upload", "images") + answer.getUser().getProfile()
-                                )
+                                .profileImage(baseUrlImagePublic + answer.getUser().getProfile())
                                 .build())
                         .uuidAnswer(answer.getUuid())
                         .link(List.of(
@@ -202,7 +202,7 @@ public class AnswerServiceImp implements AnswerService {
                                 .map(img -> ImageResponse.builder()
                                         .name(img.getImageName())
                                         .uuidImage(img.getUuid())
-                                        .url(baseUrlImage + img.getImageName())
+                                        .url(baseUrlImagePublic + img.getImageName())
                                         .link(ResponseLink.methodDelete(baseUrl + "images/" + img.getImageName(), "endpoint for delete image"))
                                         .build()).toList() : null
                         )

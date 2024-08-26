@@ -44,6 +44,9 @@ public class QuestionServiceImp implements QuestionService {
     @Value("${base-url}")
     private String baseUrl;
 
+    @Value("${base-url.read-image}")
+    private String baseUrlImagePublic;
+
 
     /**
      * create question
@@ -254,7 +257,7 @@ public class QuestionServiceImp implements QuestionService {
                         .map(img -> ImageResponse.builder()
                                 .name(img.getImageName())
                                 .uuidImage(img.getUuid())
-                                .url(baseUrl + img.getImageName())
+                                .url(baseUrlImagePublic + img.getImageName())
                                 .link(ResponseLink.methodDelete(baseUrl + "images/" + img.getImageName(), "endpoint for delete image"))
                                 .build()).toList() : null
                 )

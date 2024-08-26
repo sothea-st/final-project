@@ -1,6 +1,7 @@
 package com.finalProject.questionAndAnswer.feature.auth;
 
 import com.finalProject.questionAndAnswer.feature.auth.dto.*;
+import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.ResponseSuccess;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -33,13 +34,13 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
-    ResponseSuccess verify(@Valid @RequestBody VerifyRequest verifyRequest) {
-        authService.verify(verifyRequest);
-        return ResponseSuccess.builder().build();
+    LoginResponse verify(@Valid @RequestBody VerifyRequest verifyRequest) {
+        System.out.println("ddddddddddddddddddd");
+        return authService.verify(verifyRequest);
     }
 
     @PostMapping("/login")
-    LoginResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+    JavaResponse<?> login(@Valid @RequestBody LoginRequest loginRequest) {
         return authService.login(loginRequest);
     }
 

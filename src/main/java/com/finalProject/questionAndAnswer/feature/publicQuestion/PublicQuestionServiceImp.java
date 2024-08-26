@@ -43,8 +43,14 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
     @Value("${base-url}")
     private String baseUrl;
 
+    @Value("${base-url-public}")
+    private String baseUrlPublic;
+
     @Value("${file-upload.base-uri}")
     private String baseUrlImage;
+
+    @Value("${base-url.read-image}")
+    private String baseUrlImagePublic;
 
 
     @Override
@@ -88,7 +94,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                                             .author(AuthorResponse.builder()
                                                     .name(answer.getUser().getUserName())
                                                     .uuidUser(answer.getUser().getUuid())
-                                                    .profileImage(baseUrlImage.replace("upload", "images") + answer.getUser().getProfile())
+                                                    .profileImage(baseUrlImagePublic+ answer.getUser().getProfile())
                                                     .build())
                                             .link(List.of(
                                                     ResponseLink.methodPut(baseUrl + "answers/" + answer.getUuid(), "endpoint for update"),
@@ -98,7 +104,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                                                     .map(img -> ImageResponse.builder()
                                                             .name(img.getImageName())
                                                             .uuidImage(img.getUuid())
-                                                            .url(baseUrlImage + img.getImageName())
+                                                            .url(baseUrlImagePublic + img.getImageName())
                                                             .link(ResponseLink.methodDelete(baseUrl + "images/" + img.getImageName(), "endpoint for delete image"))
                                                             .build()).toList() : null
                                             )
@@ -144,7 +150,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                         .content(question.getContent())
                         .uuidQuestion(question.getUuid())
                         .postDate(JavaConstant.dateFormat(String.valueOf(question.getCreatedAt())))
-                        .link(ResponseLink.methodGet(baseUrl + "public-questions/" + question.getUuid(),
+                        .link(ResponseLink.methodGet(baseUrlPublic + "public-questions/" + question.getUuid(),
                                 "endpoint for access detail question"))
                         .build()).toList();
 
@@ -158,7 +164,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
         return AuthorResponse.builder()
                 .name(question.getUser().getUserName())
                 .uuidUser(question.getUser().getUuid())
-                .profileImage(baseUrlImage.replace("upload", "images") + question.getUser().getProfile())
+                .profileImage(baseUrlImagePublic + question.getUser().getProfile())
                 .build();
     }
 
@@ -167,7 +173,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                 .map(img -> ImageResponse.builder()
                         .name(img.getImageName())
                         .uuidImage(img.getUuid())
-                        .url(baseUrlImage + img.getImageName())
+                        .url(baseUrlImagePublic + img.getImageName())
                         .link(null)
                         .build()).toList() : null;
     }
@@ -181,7 +187,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                         .userComment(comment.getUser().getUserName())
                         .uuidUser(comment.getUser().getUuid())
                         .uuidComment(comment.getUuid())
-                        .profileImage(baseUrlImage.replace("upload", "images") + question.getUser().getProfile())
+                        .profileImage(baseUrlImagePublic + question.getUser().getProfile())
                         .postDate(JavaConstant.dateFormat(String.valueOf(comment.getCreatedAt())))
                         .build()).toList();
     }
@@ -195,7 +201,7 @@ public class PublicQuestionServiceImp implements PublicQuestionService {
                         .userComment(c.getUser().getUserName())
                         .uuidUser(c.getUser().getUuid())
                         .uuidComment(c.getUuid())
-                        .profileImage(baseUrlImage.replace("upload", "images") + question.getUser().getProfile())
+                        .profileImage(baseUrlImagePublic + question.getUser().getProfile())
                         .postDate(JavaConstant.dateFormat(String.valueOf(c.getCreatedAt())))
                         .build()).toList();
     }

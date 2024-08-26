@@ -19,11 +19,11 @@ public class FileUploadConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/upload/**")
-                .addResourceLocations("file:"+serverPath);
+        registry.addResourceHandler("/api/upload/**")
+                .addResourceLocations("file:"+serverPath,"classpath:/static/images/");
 
         // Serve images from a custom directory in your project
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("classpath:/static/images/");
+//        registry.addResourceHandler("/api/images/**")
+//                .addResourceLocations("classpath:/static/images/");
     }
 }

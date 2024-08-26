@@ -8,6 +8,7 @@ import com.finalProject.questionAndAnswer.feature.answer.AnswerRepository;
 import com.finalProject.questionAndAnswer.feature.comment.dto.CommentAnswerRequest;
 import com.finalProject.questionAndAnswer.feature.comment.dto.CommentRequest;
 import com.finalProject.questionAndAnswer.feature.comment.dto.CommentResponse;
+import com.finalProject.questionAndAnswer.feature.comment.dto.CommentUpdateRequest;
 import com.finalProject.questionAndAnswer.feature.question.QuestionRepository;
 import com.finalProject.questionAndAnswer.feature.user.UserRepository;
 import com.finalProject.questionAndAnswer.response_success.JavaResponse;
@@ -44,17 +45,12 @@ public class CommentServiceImp implements CommentService {
     @Value("${file-upload.base-uri}")
     private String baseUrlImage;
 
+    @Value("${base-url.read-image}")
+    private String baseUrlImagePublic;
+
 
     @Override
-    public JavaResponse<?> updateComment(CommentRequest commentRequest, String uuidComment) {
-        // Validate and retrieve the question
-        questionRepository.findByUuidAndIsDeletedTrue(commentRequest.uuidQuestion())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        questionNotFound + commentRequest.uuidQuestion()));
-// Retrieve the existing user by their uuid
-        User user = userRepository.findByUuidAndIsDeletedTrue(commentRequest.uuidUser())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "User not found with uuid: " + commentRequest.uuidUser()));
+    public JavaResponse<?> updateComment(CommentUpdateRequest commentUpdateRequest, String uuidComment) {
 
         // Create a new comment
         Comment comment = commentRepository.findByUuidAndIsDeletedTrue(uuidComment)
@@ -62,7 +58,7 @@ public class CommentServiceImp implements CommentService {
                         commentNotFound + uuidComment));
 
 
-        comment.setComment(commentRequest.comment());
+        comment.setComment(commentUpdateRequest.comment());
         commentRepository.save(comment);
 
 
@@ -70,9 +66,10 @@ public class CommentServiceImp implements CommentService {
         return JavaResponse.builder()
                 .data(CommentResponse.builder()
                         .comment(comment.getComment())
-                        .profile(baseUrlImage.replace("upload", "images") + user.getProfile())
-                        .userComment(user.getUserName())
-                        .uuidComment(comment.getUuid())
+//                        .profile(baseUrlImagePublic + user.getProfile())
+//                        .userComment(user.getUserName())
+//                        .uuidComment(comment.getUuid())
+//                        .postDate(JavaConstant.dateFormat(String.valueOf(comment.getCreatedAt())))
                         .build())
                 .build();
 
@@ -80,7 +77,6 @@ public class CommentServiceImp implements CommentService {
 
     @Override
     public ResponseSuccess deleteComment(String uuidComment) {
-
         // validate comment
         Comment comment = commentRepository.findByUuidAndIsDeletedTrue(uuidComment)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -141,7 +137,7 @@ public class CommentServiceImp implements CommentService {
         return JavaResponse.builder()
                 .data(CommentResponse.builder()
                         .comment(comment.getComment())
-                        .profile(baseUrlImage.replace("upload", "images") + user.getProfile())
+                        .profile(baseUrlImagePublic + user.getProfile())
                         .userComment(user.getUserName())
                         .uuidComment(comment.getUuid())
                         .postDate(JavaConstant.dateFormat(String.valueOf(comment.getCreatedAt())))

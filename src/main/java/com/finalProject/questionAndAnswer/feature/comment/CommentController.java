@@ -2,6 +2,7 @@ package com.finalProject.questionAndAnswer.feature.comment;
 
 import com.finalProject.questionAndAnswer.feature.comment.dto.CommentAnswerRequest;
 import com.finalProject.questionAndAnswer.feature.comment.dto.CommentRequest;
+import com.finalProject.questionAndAnswer.feature.comment.dto.CommentUpdateRequest;
 import com.finalProject.questionAndAnswer.response_success.JavaResponse;
 import com.finalProject.questionAndAnswer.response_success.ResponseSuccess;
 import jakarta.validation.Valid;
@@ -18,8 +19,6 @@ public class CommentController {
      */
     private final CommentService commentService;
 
-
-
     @PostMapping
     JavaResponse<?> addComment(@Valid @RequestBody CommentRequest commentRequest) {
         return commentService.addComment(commentRequest);
@@ -31,8 +30,8 @@ public class CommentController {
     }
 
     @PutMapping("/{uuidComment}")
-    JavaResponse<?> updateComment(@Valid @RequestBody CommentRequest commentRequest , @PathVariable String uuidComment) {
-        return commentService.updateComment(commentRequest,uuidComment);
+    JavaResponse<?> updateComment(@Valid @RequestBody CommentUpdateRequest commentUpdateRequest , @PathVariable String uuidComment) {
+        return commentService.updateComment(commentUpdateRequest,uuidComment);
     }
 
 
