@@ -119,7 +119,7 @@ public class AuthServiceImp implements AuthService {
             userVerificationRepository.save(userVerifications);
         }
 
-
+        // send email
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(message);
         messageHelper.setTo(sendVerificationRequest.email());

@@ -35,7 +35,6 @@ public class AuthController {
 
     @PostMapping("/verify")
     LoginResponse verify(@Valid @RequestBody VerifyRequest verifyRequest) {
-        System.out.println("ddddddddddddddddddd");
         return authService.verify(verifyRequest);
     }
 

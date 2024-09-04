@@ -58,6 +58,7 @@ public class FileUploadServiceImp implements FileUploadService {
         try {
             Files.copy(file.getInputStream(), path);
         } catch (Exception e) {
+            System.out.println("gggggggggggggggg = " + e);
             throw new ResponseStatusException(HttpStatus.INSUFFICIENT_STORAGE, "Upload file failed : " +file.getSize());
         }
         return FileUploadResponse.builder()

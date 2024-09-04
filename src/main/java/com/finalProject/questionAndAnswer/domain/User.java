@@ -17,6 +17,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalTime;
 import java.util.*;
 @Setter
 @Getter
@@ -56,6 +58,12 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Vote> votes;
+
+    @Column(name = "reset_password",unique = true)
+    private String resetPassword;
+
+    @Column(name = "expiration_time")
+    private LocalTime expirationTime;
 
 
     @ManyToMany
